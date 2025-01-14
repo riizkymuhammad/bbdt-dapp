@@ -122,7 +122,7 @@ export default function FundraisingPage() {
       </main>
       <footer className="py-6 border-t">
         <div className="mx-auto w-[92%] text-center text-sm text-muted-foreground">
-          © 2024 GiveHope. All rights reserved.
+          © 2024 Donasi Chain. All rights reserved.
         </div>
       </footer>
     </div>

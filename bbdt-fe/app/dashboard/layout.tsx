@@ -66,7 +66,7 @@ export default function DashboardLayout({
         <Sidebar>
           <SidebarHeader className="border-b px-6 py-3">
             <Link href="/" className="flex items-center space-x-2">
-              <Heart className="h-6 w-6 text-primary" />
+          
               <span className="text-xl font-bold">Donasi Chain</span>
             </Link>
           </SidebarHeader>

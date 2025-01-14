@@ -107,8 +107,8 @@ export default function SignUpPage() {
     <div className="min-h-screen flex flex-col">
       <div className="mx-auto w-[92%] py-4">
         <Link href="/" className="flex items-center space-x-2">
-          <Heart className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold">GiveHope</span>
+      
+          <span className="text-xl font-bold">Donasi Chain</span>
         </Link>
       </div>
       <div className="flex-1 flex items-center justify-center py-12">
