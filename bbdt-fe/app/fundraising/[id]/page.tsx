@@ -5,8 +5,13 @@ import { DonationForm } from "@/components/donation-form"
 import { FundraisingDetails } from "@/components/fundraising-details"
 import { LatestNews } from "@/components/latest-news"
 import { DonorList } from "@/components/donor-list"
+import { FundraiserList } from "@/components/fundraiser-list"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { CalendarDays, Users } from 'lucide-react'
 import Image from "next/image"
+import { formatCurrency } from "@/utils/format"
 
 // In a real app, this would come from an API
 const campaignData = {
@@ -16,6 +21,8 @@ const campaignData = {
   target: 100,
   endDate: "2024-06-30",
   daysLeft: 90,
+  donors: 156,
+  category: "Education",
   images: [
     "/placeholder.svg?height=600&width=1200",
     "/placeholder.svg?height=600&width=1200",
@@ -27,55 +34,108 @@ export default function FundraisingDetailPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main>
-        {/* Hero Image Section */}
-        <div className="relative h-[400px] md:h-[500px]">
-          <Image
-            src={campaignData.images[0]}
-            alt={campaignData.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute inset-0 flex items-center">
-            <div className="mx-auto w-[92%]">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-                {campaignData.title}
-              </h1>
-              <p className="text-lg text-white/90">
-                {campaignData.institution}
-              </p>
+      <main className="py-8">
+        <div className="container mx-auto px-4">
+          {/* Cover Case and Donation Form Grid */}
+          <div className="grid gap-8 lg:grid-cols-2 mb-8">
+            {/* Left Column - Cover Case */}
+            <div className="space-y-6">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
+                <Image
+                  src={campaignData.images[0] || "/placeholder.svg"}
+                  alt={campaignData.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
+                    {campaignData.category}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    by {campaignData.institution}
+                  </span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+                  {campaignData.title}
+                </h1>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>{campaignData.daysLeft} hari tersisa</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    <span>{campaignData.donors} donatur</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>{formatCurrency(campaignData.collected)} terkumpul</span>
+                    <span>{formatCurrency(campaignData.target)} target</span>
+                  </div>
+                  <Progress 
+                    value={(campaignData.collected / campaignData.target) * 100} 
+                    className="h-2"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    {Math.round((campaignData.collected / campaignData.target) * 100)}% dari target terkumpul
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Content Section */}
-        <div className="mx-auto w-[92%] py-8">
-          {/* Donation Form */}
-          <div className="mb-8">
-            <DonationForm
-              collected={campaignData.collected}
-              target={campaignData.target}
-              daysLeft={campaignData.daysLeft}
-            />
+            {/* Right Column - Donation Form */}
+            <div>
+              <DonationForm
+                collected={campaignData.collected}
+                target={campaignData.target}
+                daysLeft={campaignData.daysLeft}
+              />
+            </div>
           </div>
 
           {/* Tabs Section */}
-          <Tabs defaultValue="details" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="news">Latest News</TabsTrigger>
-              <TabsTrigger value="donors">Donors</TabsTrigger>
+          <Tabs defaultValue="details" className="space-y-8">
+            <TabsList className="w-full justify-start border-b pb-0 h-auto">
+              <TabsTrigger 
+                value="details"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+              >
+                Detail
+              </TabsTrigger>
+              <TabsTrigger 
+                value="news"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+              >
+                Berita Terbaru
+              </TabsTrigger>
+              <TabsTrigger 
+                value="donors"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+              >
+                Donatur
+              </TabsTrigger>
+              <TabsTrigger 
+                value="fundraisers"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+              >
+                Penggalang Dana
+              </TabsTrigger>
             </TabsList>
-            <TabsContent value="details" className="space-y-4">
+            <TabsContent value="details" className="mt-6">
               <FundraisingDetails />
             </TabsContent>
-            <TabsContent value="news" className="space-y-4">
+            <TabsContent value="news" className="mt-6">
               <LatestNews />
             </TabsContent>
-            <TabsContent value="donors" className="space-y-4">
+            <TabsContent value="donors" className="mt-6">
               <DonorList />
+            </TabsContent>
+            <TabsContent value="fundraisers" className="mt-6">
+              <FundraiserList />
             </TabsContent>
           </Tabs>
         </div>
