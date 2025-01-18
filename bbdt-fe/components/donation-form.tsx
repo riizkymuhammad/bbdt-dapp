@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -32,13 +32,37 @@ export function DonationForm({ collected, target, daysLeft }: DonationFormProps)
   const [amount, setAmount] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [walletAddress, setWalletAddress] = useState<string>("")
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+          if (accounts.length > 0) {
+            setWalletAddress(accounts[0])
+          }
+        } catch (error) {
+          console.error("Error checking wallet connection:", error)
+        }
+      }
+    }
+    
+    checkConnection()
+  }, [])
 
   const connectWallet = async () => {
     setError("")
     if (typeof window.ethereum !== 'undefined') {
       try {
         setIsLoading(true)
-        await window.ethereum.request({ method: 'eth_requestAccounts' })
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+        setWalletAddress(accounts[0])
+        
+        // Listen for account changes
+        window.ethereum.on('accountsChanged', function (accounts: string[]) {
+          setWalletAddress(accounts[0] || "")
+        })
         setIsLoading(false)
       } catch (err: any) {
         setError(err.message)
@@ -122,22 +146,25 @@ export function DonationForm({ collected, target, daysLeft }: DonationFormProps)
         </div>
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
-        <Button 
-          className="w-full" 
-          onClick={handleDonate}
-          disabled={isLoading || !amount}
-        >
-          {isLoading ? "Processing..." : "Donate ETH"}
-        </Button>
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={connectWallet}
-          disabled={isLoading}
-        >
-          <Wallet className="mr-2 h-4 w-4" />
-          Connect Wallet
-        </Button>
+        {walletAddress ? (
+          <Button 
+            className="w-full" 
+            onClick={handleDonate}
+            disabled={isLoading || !amount}
+          >
+            {isLoading ? "Processing..." : "Donate ETH"}
+          </Button>
+        ) : (
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={connectWallet}
+            disabled={isLoading}
+          >
+            <Wallet className="mr-2 h-4 w-4" />
+            Connect Wallet
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )
