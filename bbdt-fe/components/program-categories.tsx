@@ -29,7 +29,7 @@ export function ProgramCategories() {
     <section className="py-12 md:py-16">
       <div className="mx-auto w-[92%]">
         <h2 className="mb-8 md:mb-12 text-center text-2xl md:text-3xl font-bold">
-          Our Programs
+         Program Kami
         </h2>
         <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (

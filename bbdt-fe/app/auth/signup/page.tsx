@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Heart } from 'lucide-react'
 import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 const formSchema = z.object({
   name: z.string().min(2, {

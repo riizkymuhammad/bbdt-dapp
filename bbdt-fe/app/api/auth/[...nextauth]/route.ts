@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
-import { AuthOptions } from "next-auth"
+import type { AuthOptions } from "next-auth"
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -10,58 +10,64 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
     CredentialsProvider({
-      name: "Credentials",
+      id: "metamask",
+      name: "MetaMask",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        walletAddress: { label: "Wallet Address", type: "text" },
+        signature: { label: "Signature", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
-        
+        if (!credentials?.walletAddress || !credentials?.signature) return null
+
         try {
-          // Here you would typically:
-          // 1. Validate the credentials against your database
-          // 2. Return the user object if valid
-          // 3. Return null if invalid
-          
-          // For demo purposes, we'll just check for a demo account
-          if (credentials.email === "demo@example.com" && credentials.password === "demo123") {
-            return {
-              id: "1",
-              email: credentials.email,
-              name: "Demo User",
-              role: "USER"
-            }
+          // Make API call to your backend to verify the wallet and get user data
+          const response = await fetch("http://localhost:3002/api/users/loginWallet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              walletAddress: credentials.walletAddress,
+              signature: credentials.signature,
+            }),
+          })
+
+          if (!response.ok) {
+            throw new Error("Authentication failed")
           }
-          
-          return null
+
+          const data = await response.json()
+          return {
+            id: data.user.id,
+            walletAddress: data.user.walletAddress,
+            role: data.user.role,
+          }
         } catch (error) {
           console.error("Auth error:", error)
           return null
         }
-      }
-    })
+      },
+    }),
   ],
-  pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
-  },
   callbacks: {
     async jwt({ token, user }) {
+      // Add user data to token when signing in
       if (user) {
+        token.walletAddress = user.walletAddress
         token.role = user.role
       }
       return token
     },
     async session({ session, token }) {
+      // Add token data to session
       if (session.user) {
-        (session.user as any).role = token.role
+        ;(session.user as any).walletAddress = token.walletAddress
+        ;(session.user as any).role = token.role
       }
       return session
-    }
+    },
   },
-  session: {
-    strategy: "jwt",
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
 }
 

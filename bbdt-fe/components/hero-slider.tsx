@@ -14,8 +14,8 @@ import Autoplay from "embla-carousel-autoplay"
 const heroSlides = [
   {
     image: "https://images.unsplash.com/photo-1665665160518-097a89d5383e?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "Help Children Get Education",
-    description: "Support underprivileged children's education and shape their future",
+    title: "Bantu anak-anak mendapatkan pendidikan",
+    description: "Dukung pendidikan anak-anak kurang mampu dan membentuk masa depan mereka",
   },
   {
     image: "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -63,9 +63,7 @@ export function HeroSlider() {
                     <p className="mb-8 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
                       {slide.description}
                     </p>
-                    <Button size="lg" className="text-lg">
-                      Donate Now
-                    </Button>
+                   
                   </div>
                 </div>
               </div>
