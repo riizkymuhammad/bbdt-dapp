@@ -111,3 +111,55 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.loginwallet = async (req, res) => {
+    const { walletAddress } = req.body;
+  
+    // Validasi input
+    if (!walletAddress) {
+      return res.status(400).json({ message: "walletAddress is required" });
+    }
+  
+    try {
+      // Cari pengguna berdasarkan walletAddress
+      let user = await User.findOne({ walletAddress });
+      console.log('check= ',user)
+  
+      if (user) {
+        // Jika walletAddress ditemukan, lakukan login
+        const token = jwt.sign(
+          { id: user._id, walletAddress: user.walletAddress },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+        );
+  
+        return res.json({
+          message: "Login successful",
+          token,
+          user: { id: user._id, walletAddress: user.walletAddress, role:user.role },
+        });
+      } else {
+        // Jika walletAddress tidak ditemukan, buat akun baru
+        const newUser = new User({ walletAddress });
+  
+
+        await newUser.save();
+  
+        // Buat token JWT untuk pengguna baru
+        const token = jwt.sign(
+          { id: newUser._id, walletAddress: newUser.walletAddress },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+        );
+  
+        return res.status(201).json({
+          message: "Account created and logged in",
+          token,
+          user: { id: newUser._id, walletAddress: newUser.walletAddress },
+        });
+      }
+    } catch (error) {
+      console.error("Error in loginwallet:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };

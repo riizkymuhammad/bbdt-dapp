@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose');
+const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const caseRoutes = require('./routes/caseRoutes');
 require('dotenv').config();
@@ -8,6 +9,8 @@ const app = express()
 const port = process.env.PORT || 3002;
 
 app.use(express.json());
+app.use(cors());
+
 
 // Database connection
 mongoose.connect('mongodb://localhost:27017/bbdt_dapp', {
